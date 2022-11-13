@@ -25,6 +25,11 @@ contract Users {
     ENDED
   }
 
+  struct Sub {
+    string githubUrl;
+    bool approved;
+  }
+
   struct Project {
     uint projectId;
     uint bountyAmount;
@@ -33,7 +38,7 @@ contract Users {
     string desc;
     STATUS condition;
     address projOwner;
-    mapping(uint => string) submissions;
+    mapping(uint => Sub) submissions;
     mapping(address => bool) assignedTo;
   }
 
@@ -106,7 +111,7 @@ contract Users {
     require(proj.deadline > block.timestamp, "Deadline reached");
     require(proj.assignedTo[msg.sender] == true, "Project not assigned");
 
-    proj.submissions[addToId[msg.sender]] = _url;
+    proj.submissions[addToId[msg.sender]].githubUrl = _url;
 
   }
 
@@ -116,12 +121,15 @@ contract Users {
 
     require(proj.submissions[addToId[msg.sender]] != "", "No project submitted yet");
 
-    proj.submissions[addToId[msg.sender]] = _url;
+    proj.submissions[addToId[msg.sender]].githubUrl = _url;
   }
 
   //?: User who completed a project will get a nft upon approval of the project owner (thinking)
+  function approveSubmissions(uint _projId) external {
+    Project proj = getProjById(_projId);
 
-
+    proj.submissions[addToId[msg.sender]].approved = true;
+  }
 
 }
 
